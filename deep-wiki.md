@@ -118,3 +118,118 @@ sequenceDiagram
 - [Azure OpenAI Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/overview)
 
 This documentation provides a comprehensive overview of the MCP tools project, detailing its architecture, functionality, and best practices.
+
+# AI Agents Service Usage Deep Wiki
+
+## AI Agents Service Usage (ai-agents-service-usage)
+
+This snippet demonstrates how to use Azure AI Agents to generate a code style guide from code snippets. It covers agent creation, authentication, tool registration, execution monitoring, and error handling.
+
+### Purpose
+- Automate the generation of a Markdown code style guide by analyzing code patterns using an autonomous agent.
+- Integrate with Azure AI Project, using a vector search tool to retrieve relevant code examples.
+
+### Usage
+- Set environment variables: `PROJECT_CONNECTION_STRING` and `AGENTS_MODEL_DEPLOYMENT_NAME`.
+- Call `generate_code_style(chat_history: str = "", user_query: str = "") -> str` to start the process.
+- The agent will:
+  1. Authenticate using `DefaultAzureCredential`.
+  2. Connect to the Azure AI Project.
+  3. Register the `vector_search` tool.
+  4. Create and run the CodeStyleSynthesizer agent.
+  5. Monitor execution, handle tool calls, and return the Markdown guide.
+
+### Configuration
+- Logging is set to INFO for the module, with Azure SDK logs reduced to WARNING.
+- All secrets and connection strings are accessed via `os.environ`.
+- The agent is configured to use a single vector search per run for efficiency.
+
+### Best Practices
+- Use async Azure SDKs and avoid blocking calls.
+- Handle exceptions and log errors for traceability.
+- Never commit secrets or connection strings in code.
+- Validate agent output before using it in downstream processes.
+
+### Example Call
+```python
+result = await generate_code_style(chat_history="", user_query="What are our code style rules?")
+print(result)
+```
+
+---
+
+# Deep Wiki for All Code Snippets
+
+This section provides a comprehensive reference for all code snippets in this project, including their purpose, usage, configuration, and best practices. Use this as a knowledge base for onboarding, troubleshooting, and development.
+
+## Snippet: my-cloud-mcp-test
+
+**File:** `my-cloud-mcp-test.py`
+
+### Purpose
+Demonstrates how to add chat history to an Azure AI Agent thread using the Azure AI Agents Python SDK. This is a common pattern for conversational agents that need to maintain context across multiple user interactions.
+
+### Usage
+- Ensure you have a valid `chat_history` string and initialized `logger` and `project_client` objects.
+- The snippet checks if `chat_history` is present, logs the action, and asynchronously sends the chat history as a user message to the agent's thread.
+
+```python
+if chat_history:
+    logger.info("Adding chat history to thread")
+    await project_client.agents.create_message(
+        thread_id=thread.id,
+        role="user",
+        content=chat_history
+    )
+```
+
+### Configuration
+- Requires an async context (e.g., inside an `async def` function).
+- `project_client` must be an instance of `AIProjectClient` (from Azure SDK).
+- `logger` should be configured for your application/module.
+
+### Best Practices
+- Always check for the presence of `chat_history` before sending.
+- Use logging to trace message flow for debugging and auditability.
+- Handle exceptions around async calls to avoid silent failures.
+
+## Snippet: ai-agents-service-usage
+
+**File:** `src/agents/code_style.py`
+
+### Purpose
+Automates the generation of a Markdown code style guide by analyzing code patterns using an autonomous agent. Integrates with Azure AI Project, using a vector search tool to retrieve relevant code examples.
+
+### Usage
+- Set environment variables: `PROJECT_CONNECTION_STRING` and `AGENTS_MODEL_DEPLOYMENT_NAME`.
+- Call `generate_code_style(chat_history: str = "", user_query: str = "") -> str` to start the process.
+- The agent will:
+  1. Authenticate using `DefaultAzureCredential`.
+  2. Connect to the Azure AI Project.
+  3. Register the `vector_search` tool.
+  4. Create and run the CodeStyleSynthesizer agent.
+  5. Monitor execution, handle tool calls, and return the Markdown guide.
+
+### Configuration
+- Logging is set to INFO for the module, with Azure SDK logs reduced to WARNING.
+- All secrets and connection strings are accessed via `os.environ`.
+- The agent is configured to use a single vector search per run for efficiency.
+
+### Best Practices
+- Use async Azure SDKs and avoid blocking calls.
+- Handle exceptions and log errors for traceability.
+- Never commit secrets or connection strings in code.
+- Validate agent output before using it in downstream processes.
+
+### Example Call
+```python
+result = await generate_code_style(chat_history="", user_query="What are our code style rules?")
+print(result)
+```
+
+---
+
+## How to Use This Wiki
+- Reference snippet sections for implementation details and integration patterns.
+- Follow configuration and best practice notes to ensure robust, secure, and maintainable code.
+- Extend this wiki as new snippets are added to the project.
